@@ -1,0 +1,26 @@
+name: 24h Auto Refresh
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Update Plist Files
+        run: |
+          for file in *.plist; do
+            echo "" >> "$file"
+          done
+          
+      - name: Save Changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Automated daily refresh $(date)" || exit 0
+          git push
